@@ -1,0 +1,40 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.9.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "1d3193f"
+  },
+  "schemaVersion": 18,
+  "id": "Form_3yhhwj9",
+  "components": [
+    {
+      "type": "text",
+      "text": "## Missing information\n\nThe document validation rule reported a problem. Please review and supply the missing details before re-submitting.",
+      "layout": {
+        "row": "row_intro"
+      }
+    },
+    {
+      "label": "Validation reason",
+      "type": "textfield",
+      "key": "documentsValid.reason",
+      "disabled": true,
+      "layout": {
+        "row": "row_reason"
+      }
+    },
+    {
+      "label": "Additional notes",
+      "type": "textarea",
+      "key": "missingInfoNotes",
+      "validate": {
+        "required": true
+      },
+      "layout": {
+        "row": "row_notes"
+      }
+    }
+  ],
+  "type": "default"
+}

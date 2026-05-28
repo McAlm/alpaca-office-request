@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="1d3193f" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
+  <bpmn:process id="Process_exjzcwi" name="Extrat Data" isExecutable="true">
+    <bpmn:startEvent id="Event_1kh1kxn">
+      <bpmn:outgoing>Flow_0bui4n4</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="Gateway_0cgegci" name="which document type?" default="Flow_1h2fsvd">
+      <bpmn:incoming>Flow_Classify_Extract</bpmn:incoming>
+      <bpmn:outgoing>Flow_1euhkfo</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1h2fsvd</bpmn:outgoing>
+      <bpmn:outgoing>Flow_17d8hyw</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="Event_1onx3ji">
+      <bpmn:incoming>Flow_0jwk2qj</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_1fg2lfv">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:output source="={&#10;}" target="extractedFields" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1h2fsvd</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0bui4n4" sourceRef="Event_1kh1kxn" targetRef="Task_ClassifyDocuments" />
+    <bpmn:sequenceFlow id="Flow_Classify_Extract" sourceRef="Task_ClassifyDocuments" targetRef="Gateway_0cgegci" />
+    <bpmn:sequenceFlow id="Flow_1euhkfo" name="business-justification" sourceRef="Gateway_0cgegci" targetRef="Task_ExtractDocuments">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=classificationResult.extractedValue = "alpaca-business-justification-memo"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0jwk2qj" sourceRef="Task_ExtractDocuments" targetRef="Event_1onx3ji" />
+    <bpmn:sequenceFlow id="Flow_1h2fsvd" name="ignore all others" sourceRef="Gateway_0cgegci" targetRef="Event_1fg2lfv" />
+    <bpmn:sequenceFlow id="Flow_17d8hyw" name="suitability" sourceRef="Gateway_0cgegci" targetRef="Activity_1ojpnok">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=classificationResult.extractedValue="alpaca-suitability"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="Event_0byr7cy">
+      <bpmn:incoming>Flow_1g3md66</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1g3md66" sourceRef="Activity_1ojpnok" targetRef="Event_0byr7cy" />
+    <bpmn:task id="Task_ExtractDocuments" name="Extract business justification">
+      <bpmn:incoming>Flow_1euhkfo</bpmn:incoming>
+      <bpmn:outgoing>Flow_0jwk2qj</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_1ojpnok" name="Extract Alpaca Suitability Info">
+      <bpmn:incoming>Flow_17d8hyw</bpmn:incoming>
+      <bpmn:outgoing>Flow_1g3md66</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_ClassifyDocuments" name="Classify uploaded documents">
+      <bpmn:documentation>Calls the IDP document classification template. Each uploaded document is assigned a type (alpaca-suitability-form, vet-certificate, business-justification-memo, unclassified-document).</bpmn:documentation>
+      <bpmn:incoming>Flow_0bui4n4</bpmn:incoming>
+      <bpmn:outgoing>Flow_Classify_Extract</bpmn:outgoing>
+    </bpmn:task>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_exjzcwi">
+      <bpmndi:BPMNShape id="Event_1kh1kxn_di" bpmnElement="Event_1kh1kxn">
+        <dc:Bounds x="192" y="122" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0cgegci_di" bpmnElement="Gateway_0cgegci" isMarkerVisible="true">
+        <dc:Bounds x="425" y="115" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="410" y="86" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1onx3ji_di" bpmnElement="Event_1onx3ji">
+        <dc:Bounds x="702" y="122" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_14mbm9x_di" bpmnElement="Task_ExtractDocuments">
+        <dc:Bounds x="560" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0byr7cy_di" bpmnElement="Event_0byr7cy">
+        <dc:Bounds x="702" y="242" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_06yaz09_di" bpmnElement="Activity_1ojpnok">
+        <dc:Bounds x="560" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1fg2lfv_di" bpmnElement="Event_1fg2lfv">
+        <dc:Bounds x="702" y="352" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0wwjiz0_di" bpmnElement="Task_ClassifyDocuments">
+        <dc:Bounds x="270" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0bui4n4_di" bpmnElement="Flow_0bui4n4">
+        <di:waypoint x="228" y="140" />
+        <di:waypoint x="270" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Classify_Extract_di" bpmnElement="Flow_Classify_Extract">
+        <di:waypoint x="370" y="140" />
+        <di:waypoint x="425" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1euhkfo_di" bpmnElement="Flow_1euhkfo">
+        <di:waypoint x="475" y="140" />
+        <di:waypoint x="560" y="140" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="491" y="108" width="55" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0jwk2qj_di" bpmnElement="Flow_0jwk2qj">
+        <di:waypoint x="660" y="140" />
+        <di:waypoint x="702" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1h2fsvd_di" bpmnElement="Flow_1h2fsvd">
+        <di:waypoint x="450" y="165" />
+        <di:waypoint x="450" y="370" />
+        <di:waypoint x="702" y="370" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="479" y="353" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_17d8hyw_di" bpmnElement="Flow_17d8hyw">
+        <di:waypoint x="450" y="165" />
+        <di:waypoint x="450" y="260" />
+        <di:waypoint x="560" y="260" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="477" y="243" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1g3md66_di" bpmnElement="Flow_1g3md66">
+        <di:waypoint x="660" y="260" />
+        <di:waypoint x="702" y="260" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

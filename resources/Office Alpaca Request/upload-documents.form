@@ -1,0 +1,48 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.9.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "1d3193f"
+  },
+  "schemaVersion": 19,
+  "id": "Form_gkssnth",
+  "components": [
+    {
+      "text": "# Office Alpaca Request\n\nPlease upload the supporting documents for your alpaca visit.",
+      "type": "text",
+      "layout": {
+        "row": "row_intro"
+      },
+      "id": "Field_033hsvx"
+    },
+    {
+      "label": "Requester name",
+      "type": "textfield",
+      "key": "requesterName",
+      "validate": {
+        "required": true
+      },
+      "layout": {
+        "row": "row_req"
+      },
+      "id": "Field_1m2mr28"
+    },
+    {
+      "label": "Supporting documents",
+      "description": "Upload the Alpaca Suitability Form, Vet Certificate and (optional) Business Justification Memo as PDFs.",
+      "type": "filepicker",
+      "key": "alpacaDocuments",
+      "multiple": true,
+      "accept": ".pdf,.png,.jpg,.jpeg",
+      "validate": {
+        "required": true
+      },
+      "layout": {
+        "row": "row_files"
+      },
+      "id": "Field_06jrzmu"
+    }
+  ],
+  "type": "default"
+}

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_7tjjont" name="Document Validity" namespace="http://camunda.org/workshop/alpaca/dmn" exporter="Camunda Modeler" exporterVersion="5.46.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
+  <decision id="Decision_awnave9" name="Document validity">
+    <decisionTable id="DecisionTable_DocValidity" hitPolicy="FIRST">
+      <input id="input_vacc" label="Vaccination status" biodi:width="192">
+        <inputExpression id="ie_vacc" typeRef="string">
+          <text>lower case(allExtractedData.vaccinationStatus)</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_04m35qa" label="Alpaca Temperament Score">
+        <inputExpression id="LiteralExpression_1fpqex4" typeRef="number">
+          <text>allExtractedData.temperamentScore</text>
+        </inputExpression>
+      </input>
+      <output id="out_valid" label="Valid" name="valid" typeRef="boolean" />
+      <output id="out_reason" label="Reason" name="reason" typeRef="string" />
+      <rule id="rule_invalid_vacc">
+        <inputEntry id="ie_r2_b">
+          <text>not("valid")</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_154x2ii">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="oe_r2_a">
+          <text>false</text>
+        </outputEntry>
+        <outputEntry id="oe_r2_b">
+          <text>"Vet certificate vaccination status is not valid."</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1teichf">
+        <inputEntry id="UnaryTests_0tykgj3">
+          <text>-</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1kx5vov">
+          <text>not (is defined(?))</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_005rsn4">
+          <text>false</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1ifkl1o">
+          <text>"Alpaca Temperament Score  could not be retrieved!"</text>
+        </outputEntry>
+      </rule>
+      <rule id="rule_valid">
+        <inputEntry id="ie_r4_b">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1ckwl33">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="oe_r4_a">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="oe_r4_b">
+          <text>"All information could be captured"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_1">
+      <dmndi:DMNShape id="DMNShape_DocValidity" dmnElementRef="Decision_awnave9">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

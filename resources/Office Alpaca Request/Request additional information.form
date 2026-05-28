@@ -1,0 +1,45 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.9.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "1d3193f"
+  },
+  "schemaVersion": 19,
+  "id": "Form_zryer6r",
+  "components": [
+    {
+      "label": "Alpaca Request Context",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_196yp2a",
+        "columns": null
+      },
+      "id": "Field_0l6ehyv",
+      "key": "alpacaRequestContext",
+      "readonly": true
+    },
+    {
+      "label": "Agent's question",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1kh3nyn",
+        "columns": null
+      },
+      "id": "Field_0z9g3th",
+      "key": "agentQuestion",
+      "readonly": true
+    },
+    {
+      "label": "Response",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_10slzan",
+        "columns": null
+      },
+      "id": "Field_0mgqmyd",
+      "key": "applicantResponse"
+    }
+  ],
+  "type": "default"
+}

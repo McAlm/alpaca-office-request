@@ -1,0 +1,115 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.9.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "1d3193f"
+  },
+  "schemaVersion": 19,
+  "id": "Form_mokzfmw",
+  "components": [
+    {
+      "text": "## Chief Alpaca Officer review\n\nReview the AI-generated event plan and make the final call.",
+      "type": "text",
+      "id": "Field_0s9vtjw",
+      "layout": {
+        "row": "Row_1kcx8bp"
+      }
+    },
+    {
+      "label": "Requester",
+      "type": "textfield",
+      "key": "requesterName",
+      "disabled": true,
+      "id": "Field_1mgzqq5",
+      "layout": {
+        "row": "Row_0v3jsmx"
+      }
+    },
+    {
+      "label": "Alpaca",
+      "type": "textfield",
+      "key": "allExtractedData.alpacaName",
+      "disabled": true,
+      "id": "Field_13yl8xq",
+      "layout": {
+        "row": "Row_0pqpdbu"
+      }
+    },
+    {
+      "label": "Office",
+      "type": "textfield",
+      "key": "allExtractedData.officeLocation",
+      "disabled": true,
+      "id": "Field_156jkx7",
+      "layout": {
+        "row": "Row_1a8nu5z"
+      }
+    },
+    {
+      "label": "Visit date",
+      "type": "textfield",
+      "key": "allExtractedData.visitDate",
+      "disabled": true,
+      "id": "Field_03tchef",
+      "layout": {
+        "row": "Row_1c5zf3p"
+      }
+    },
+    {
+      "type": "table",
+      "layout": {
+        "row": "Row_0n4ohxm",
+        "columns": null
+      },
+      "label": "Table",
+      "dataSource": "=agentResponse.proposedSchedule",
+      "rowCount": 10,
+      "id": "Field_0jra8ut",
+      "columns": [
+        {
+          "label": "Time",
+          "key": "time"
+        },
+        {
+          "label": "Activity",
+          "key": "activity"
+        }
+      ]
+    },
+    {
+      "label": "AI Agent Recommendation",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0w0ohnm",
+        "columns": null
+      },
+      "id": "Field_18q60gb",
+      "key": "agentResponse.recommendedDecision",
+      "readonly": true
+    },
+    {
+      "label": "Final decision",
+      "type": "checkbox",
+      "key": "caoApproved",
+      "description": "Tick to approve the alpaca visit. Untick to reject.",
+      "id": "Field_0rlvdgy",
+      "layout": {
+        "row": "Row_0vxg33n"
+      }
+    },
+    {
+      "label": "Decision rationale",
+      "type": "textarea",
+      "key": "caoRationale",
+      "validate": {
+        "required": true
+      },
+      "id": "Field_1vqasow",
+      "layout": {
+        "row": "Row_0qlep4g"
+      }
+    }
+  ],
+  "type": "default"
+}

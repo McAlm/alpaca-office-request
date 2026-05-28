@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_office_alpaca" targetNamespace="http://camunda.org/workshop/alpaca" exporter="Camunda Web Modeler" exporterVersion="1d3193f" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
+  <bpmn:process id="Process_rw0nf3v" name="Office Alpaca Approval" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_Submitted" name="Alpaca request submitted">
+      <bpmn:outgoing>Flow_Start_Upload</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_UploadDocuments" name="Upload request documents">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:assignmentDefinition candidateGroups="alpaca-requesters" />
+        <zeebe:formDefinition formId="Form_gkssnth" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Start_Upload</bpmn:incoming>
+      <bpmn:incoming>Flow_MissingInfo_Upload</bpmn:incoming>
+      <bpmn:outgoing>Flow_1c4m6hv</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:businessRuleTask id="Task_ValidateDocuments" name="Validate extracted data">
+      <bpmn:extensionElements>
+        <zeebe:calledDecision decisionId="document-validity" resultVariable="documentsValid" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1apshbp</bpmn:incoming>
+      <bpmn:outgoing>Flow_Validate_Gateway</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:exclusiveGateway id="Gateway_DocumentsValid" name="Documents valid?" default="Flow_Docs_Invalid">
+      <bpmn:incoming>Flow_Validate_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_Docs_Invalid</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Docs_Valid</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_RequestMissingInfo" name="Request missing information">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:assignmentDefinition candidateGroups="alpaca-requesters" />
+        <zeebe:formDefinition formId="Form_3yhhwj9" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Docs_Invalid</bpmn:incoming>
+      <bpmn:outgoing>Flow_MissingInfo_Upload</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_CheckOfficeReadiness" name="Check office readiness">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="check-office-readiness" retries="3" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Docs_Valid</bpmn:incoming>
+      <bpmn:outgoing>Flow_OfficeReady_Join</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_AnyBlockers" name="Any blocker found?" default="Flow_NoBlockers">
+      <bpmn:incoming>Flow_OfficeReady_Join</bpmn:incoming>
+      <bpmn:outgoing>Flow_Blockers_Reject</bpmn:outgoing>
+      <bpmn:outgoing>Flow_NoBlockers</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:adHocSubProcess id="SubProcess_AgentPlan" name="Propose alpaca event plan" zeebe:modelerTemplate="io.camunda.connectors.agenticai.aiagent.jobworker.v1" zeebe:modelerTemplateVersion="6" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiNBNTZFRkYiLz4KPG1hc2sgaWQ9InBhdGgtMi1vdXRzaWRlLTFfMTg1XzYiIG1hc2tVbml0cz0idXNlclNwYWNlT25Vc2UiIHg9IjQiIHk9IjQiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0iYmxhY2siPgo8cmVjdCBmaWxsPSJ3aGl0ZSIgeD0iNCIgeT0iNCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0Ii8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjAuMDEwNSAxMi4wOTg3QzE4LjQ5IDEwLjU4OTQgMTcuMTU5NCA4LjEwODE0IDE2LjE3OTkgNi4wMTEwM0MxNi4xNTIgNi4wMDQ1MSAxNi4xMTc2IDYgMTYuMDc5NCA2QzE2LjA0MTEgNiAxNi4wMDY2IDYuMDA0NTEgMTUuOTc4OCA2LjAxMTA0QzE0Ljk5OTQgOC4xMDgxNCAxMy42Njk3IDEwLjU4ODkgMTIuMTQ4MSAxMi4wOTgxQzEwLjYyNjkgMTMuNjA3MSA4LjEyNTY4IDE0LjkyNjQgNi4wMTE1NyAxNS44OTgxQzYuMDA0NzQgMTUuOTI2MSA2IDE1Ljk2MTEgNiAxNkM2IDE2LjAzODcgNi4wMDQ2OCAxNi4wNzM2IDYuMDExNDQgMTYuMTAxNEM4LjEyNTE5IDE3LjA3MjkgMTAuNjI2MiAxOC4zOTE5IDEyLjE0NzcgMTkuOTAxNkMxMy42Njk3IDIxLjQxMDcgMTQuOTk5NiAyMy44OTIgMTUuOTc5MSAyNS45ODlDMTYuMDA2OCAyNS45OTU2IDE2LjA0MTEgMjYgMTYuMDc5MyAyNkMxNi4xMTc1IDI2IDE2LjE1MTkgMjUuOTk1NCAxNi4xNzk2IDI1Ljk4OUMxNy4xNTkxIDIzLjg5MiAxOC40ODg4IDIxLjQxMSAyMC4wMDk5IDE5LjkwMjFNMjAuMDA5OSAxOS45MDIxQzIxLjUyNTMgMTguMzk4NyAyMy45NDY1IDE3LjA2NjkgMjUuOTkxNSAxNi4wODI0QzI1Ljk5NjUgMTYuMDU5MyAyNiAxNi4wMzEgMjYgMTUuOTk5N0MyNiAxNS45Njg0IDI1Ljk5NjUgMTUuOTQwMyAyNS45OTE1IDE1LjkxNzFDMjMuOTQ3NCAxNC45MzI3IDIxLjUyNTkgMTMuNjAxIDIwLjAxMDUgMTIuMDk4NyIvPgo8L21hc2s+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjAuMDEwNSAxMi4wOTg3QzE4LjQ5IDEwLjU4OTQgMTcuMTU5NCA4LjEwODE0IDE2LjE3OTkgNi4wMTEwM0MxNi4xNTIgNi4wMDQ1MSAxNi4xMTc2IDYgMTYuMDc5NCA2QzE2LjA0MTEgNiAxNi4wMDY2IDYuMDA0NTEgMTUuOTc4OCA2LjAxMTA0QzE0Ljk5OTQgOC4xMDgxNCAxMy42Njk3IDEwLjU4ODkgMTIuMTQ4MSAxMi4wOTgxQzEwLjYyNjkgMTMuNjA3MSA4LjEyNTY4IDE0LjkyNjQgNi4wMTE1NyAxNS44OTgxQzYuMDA0NzQgMTUuOTI2MSA2IDE1Ljk2MTEgNiAxNkM2IDE2LjAzODcgNi4wMDQ2OCAxNi4wNzM2IDYuMDExNDQgMTYuMTAxNEM4LjEyNTE5IDE3LjA3MjkgMTAuNjI2MiAxOC4zOTE5IDEyLjE0NzcgMTkuOTAxNkMxMy42Njk3IDIxLjQxMDcgMTQuOTk5NiAyMy44OTIgMTUuOTc5MSAyNS45ODlDMTYuMDA2OCAyNS45OTU2IDE2LjA0MTEgMjYgMTYuMDc5MyAyNkMxNi4xMTc1IDI2IDE2LjE1MTkgMjUuOTk1NCAxNi4xNzk2IDI1Ljk4OUMxNy4xNTkxIDIzLjg5MiAxOC40ODg4IDIxLjQxMSAyMC4wMDk5IDE5LjkwMjFNMjAuMDA5OSAxOS45MDIxQzIxLjUyNTMgMTguMzk4NyAyMy45NDY1IDE3LjA2NjkgMjUuOTkxNSAxNi4wODI0QzI1Ljk5NjUgMTYuMDU5MyAyNiAxNi4wMzEgMjYgMTUuOTk5N0MyNiAxNS45Njg0IDI1Ljk5NjUgMTUuOTQwMyAyNS45OTE1IDE1LjkxNzFDMjMuOTQ3NCAxNC45MzI3IDIxLjUyNTkgMTMuNjAxIDIwLjAxMDUgMTIuMDk4NyIgZmlsbD0id2hpdGUiLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMC4wMTA1IDEyLjA5ODdDMTguNDkgMTAuNTg5NCAxNy4xNTk0IDguMTA4MTQgMTYuMTc5OSA2LjAxMTAzQzE2LjE1MiA2LjAwNDUxIDE2LjExNzYgNiAxNi4wNzk0IDZDMTYuMDQxMSA2IDE2LjAwNjYgNi4wMDQ1MSAxNS45Nzg4IDYuMDExMDRDMTQuOTk5NCA4LjEwODE0IDEzLjY2OTcgMTAuNTg4OSAxMi4xNDgxIDEyLjA5ODFDMTAuNjI2OSAxMy42MDcxIDguMTI1NjggMTQuOTI2NCA2LjAxMTU3IDE1Ljg5ODFDNi4wMDQ3NCAxNS45MjYxIDYgMTUuOTYxMSA2IDE2QzYgMTYuMDM4NyA2LjAwNDY4IDE2LjA3MzYgNi4wMTE0NCAxNi4xMDE0QzguMTI1MTkgMTcuMDcyOSAxMC42MjYyIDE4LjM5MTkgMTIuMTQ3NyAxOS45MDE2QzEzLjY2OTcgMjEuNDEwNyAxNC45OTk2IDIzLjg5MiAxNS45NzkxIDI1Ljk4OUMxNi4wMDY4IDI1Ljk5NTYgMTYuMDQxMSAyNiAxNi4wNzkzIDI2QzE2LjExNzUgMjYgMTYuMTUxOSAyNS45OTU0IDE2LjE3OTYgMjUuOTg5QzE3LjE1OTEgMjMuODkyIDE4LjQ4ODggMjEuNDExIDIwLjAwOTkgMTkuOTAyMU0yMC4wMDk5IDE5LjkwMjFDMjEuNTI1MyAxOC4zOTg3IDIzLjk0NjUgMTcuMDY2OSAyNS45OTE1IDE2LjA4MjRDMjUuOTk2NSAxNi4wNTkzIDI2IDE2LjAzMSAyNiAxNS45OTk3QzI2IDE1Ljk2ODQgMjUuOTk2NSAxNS45NDAzIDI1Ljk5MTUgMTUuOTE3MUMyMy45NDc0IDE0LjkzMjcgMjEuNTI1OSAxMy42MDEgMjAuMDEwNSAxMi4wOTg3IiBzdHJva2U9IiM0OTFEOEIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgbWFzaz0idXJsKCNwYXRoLTItb3V0c2lkZS0xXzE4NV82KSIvPgo8L3N2Zz4K">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda.agenticai:aiagent-job-worker:1" retries="3" />
+        <zeebe:adHoc outputCollection="toolCallResults" outputElement="={&#10;  id: toolCall._meta.id,&#10;  name: toolCall._meta.name,&#10;  content: toolCallResult&#10;}" />
+        <zeebe:ioMapping>
+          <zeebe:input source="openai" target="provider.type" />
+          <zeebe:input source="{{secrets.OPENAI_API_KEY}}" target="provider.openai.authentication.apiKey" />
+          <zeebe:input source="gpt-5.4-mini" target="provider.openai.model.model" />
+          <zeebe:input source="0.2" target="provider.openai.model.parameters.temperature" />
+          <zeebe:input source="=&#34;You are the Office Alpaca Event Planner. Propose a safe, funny-but-professional alpaca event plan for a one-day office visit. Use the provided tools when you need office policy or past visit history to make a profound suggestion. &#10;If you become aware of any new requirements to conduct an alpaca visit you MUST ensure these requirements are met. &#10;&#10;────────────────────────────────&#10;# Mandatory tool use&#10;────────────────────────────────&#10;For every request you MUST inspect the provided tools and evaluate which tool would be the next step to achieve your goal.&#10;&#10;────────────────────────────────&#10;# CHAIN-OF-THOUGHT FORMAT&#10;────────────────────────────────&#10;Wrap minimal, inspectable reasoning in this XML template:&#10;&#10;&#60;thinking&#62;&#10;  &#60;context&#62;…briefly state the alpaca visit request and current state of the process&#60;/context&#62;&#10;  &#60;reflection&#62;…list candidate tools (by capability and actual names from the list), justify which you will call next and why; justify why not the others…&#60;/reflection&#62;&#10;&#60;/thinking&#62;&#10;&#10;Final Output: JSON with fields proposedSchedule (array of {time, activity}), riskNotes (string), recommendedDecision (APPROVE|REVIEW). Never override safety or budget rules.&#34;" target="data.systemPrompt.prompt" />
+          <zeebe:input source="=allExtractedData" target="data.userPrompt.prompt" />
+          <zeebe:input target="agentContext" />
+          <zeebe:input source="in-process" target="data.memory.storage.type" />
+          <zeebe:input source="20" target="data.memory.contextWindowSize" />
+          <zeebe:input source="6" target="data.limits.maxModelCalls" />
+          <zeebe:input source="WAIT_FOR_TOOL_CALL_RESULTS" target="data.events.behavior" />
+          <zeebe:input source="text" target="data.response.format.type" />
+          <zeebe:input source="=false" target="data.response.format.parseJson" />
+          <zeebe:input source="=true" target="data.response.includeAssistantMessage" />
+          <zeebe:input source="=true" target="data.response.includeAgentContext" />
+          <zeebe:output source="=agent" target="agent" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="elementTemplateVersion" value="6" />
+          <zeebe:header key="elementTemplateId" value="io.camunda.connectors.agenticai.aiagent.jobworker.v1" />
+          <zeebe:header key="retryBackoff" value="PT0S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_NoBlockers</bpmn:incoming>
+      <bpmn:outgoing>Flow_Agent_CAO</bpmn:outgoing>
+      <bpmn:scriptTask id="Tool_GetOfficePolicy" name="Get office policy">
+        <bpmn:documentation>Returns the office policy for alpaca visits at a given office location. Use when the system prompt or user request needs policy detail (e.g., elevator restrictions, allowed floors, soft-hoof rules).</bpmn:documentation>
+        <bpmn:extensionElements>
+          <zeebe:script expression="={&#10;            location: allExtractedData.officeLocation,&#10;            elevatorAllowed: false,&#10;            softHoofMatsRequired: true,&#10;            maxAlpacasPerFloor: 1,&#10;            policyVersion: &#34;2026.05&#34;&#10;          }" resultVariable="toolCallResult" />
+        </bpmn:extensionElements>
+      </bpmn:scriptTask>
+      <bpmn:scriptTask id="Tool_GetPastVisits" name="Get past visit history">
+        <bpmn:documentation>Returns a short summary of previous alpaca visits at the requested office.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <zeebe:script expression="={&#10;            location: allExtractedData.officeLocation, &#10;            pastVisits: [&#10;              {date: &#34;2025-11-04&#34;, outcome: &#34;success&#34;, notes: &#34;Three teams photographed, no incidents.&#34;},&#10;              {date: &#34;2025-06-12&#34;, outcome: &#34;warning&#34;, notes: &#34;Minor carpet incident on level 3.&#34;}&#10;            ]&#10;          }" resultVariable="toolCallResult" />
+        </bpmn:extensionElements>
+      </bpmn:scriptTask>
+    </bpmn:adHocSubProcess>
+    <bpmn:exclusiveGateway id="Gateway_CAOApproved" name="CAO approved?" default="Flow_CAO_Reject">
+      <bpmn:incoming>Flow_CAO_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_CAO_Approved</bpmn:outgoing>
+      <bpmn:outgoing>Flow_CAO_Reject</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_ScheduleVisit" name="Schedule alpaca visit">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="schedule-alpaca-visit" retries="3" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_CAO_Approved</bpmn:incoming>
+      <bpmn:outgoing>Flow_Schedule_Pack</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="EndEvent_Confirmed" name="Alpaca day confirmed">
+      <bpmn:incoming>Flow_Schedule_Pack</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEvent_RejectedBlockers" name="Request rejected (blockers)">
+      <bpmn:incoming>Flow_Blockers_Reject</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEvent_RejectedCAO" name="Request rejected (CAO)">
+      <bpmn:incoming>Flow_CAO_Reject</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_Start_Upload" sourceRef="StartEvent_Submitted" targetRef="Task_UploadDocuments" />
+    <bpmn:sequenceFlow id="Flow_Validate_Gateway" sourceRef="Task_ValidateDocuments" targetRef="Gateway_DocumentsValid" />
+    <bpmn:sequenceFlow id="Flow_Docs_Invalid" name="missing data" sourceRef="Gateway_DocumentsValid" targetRef="Task_RequestMissingInfo" />
+    <bpmn:sequenceFlow id="Flow_MissingInfo_Upload" sourceRef="Task_RequestMissingInfo" targetRef="Task_UploadDocuments" />
+    <bpmn:sequenceFlow id="Flow_OfficeReady_Join" sourceRef="Task_CheckOfficeReadiness" targetRef="Gateway_AnyBlockers" />
+    <bpmn:sequenceFlow id="Flow_Blockers_Reject" name="blocker" sourceRef="Gateway_AnyBlockers" targetRef="EndEvent_RejectedBlockers">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=officeReady = false</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_NoBlockers" name="all clear" sourceRef="Gateway_AnyBlockers" targetRef="SubProcess_AgentPlan" />
+    <bpmn:sequenceFlow id="Flow_CAO_Approved" name="approved" sourceRef="Gateway_CAOApproved" targetRef="Task_ScheduleVisit">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=caoApproved = true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_CAO_Reject" name="rejected" sourceRef="Gateway_CAOApproved" targetRef="EndEvent_RejectedCAO" />
+    <bpmn:sequenceFlow id="Flow_Schedule_Pack" sourceRef="Task_ScheduleVisit" targetRef="EndEvent_Confirmed" />
+    <bpmn:sequenceFlow id="Flow_1c4m6hv" sourceRef="Task_UploadDocuments" targetRef="Activity_0oc32u3" />
+    <bpmn:sequenceFlow id="Flow_1glqysf" sourceRef="Activity_0oc32u3" targetRef="Activity_0otlysh" />
+    <bpmn:callActivity id="Activity_0oc32u3" name="Extract Data from Documents">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:input source="=document" target="document" />
+          <zeebe:output source="=extractedFields" target="extractedFields" />
+        </zeebe:ioMapping>
+        <zeebe:calledElement processId="Process_exjzcwi" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1c4m6hv</bpmn:incoming>
+      <bpmn:outgoing>Flow_1glqysf</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics>
+        <bpmn:extensionElements>
+          <zeebe:loopCharacteristics inputCollection="=alpacaDocuments" inputElement="document" outputCollection="allExtractedFields" outputElement="=extractedFields" />
+        </bpmn:extensionElements>
+      </bpmn:multiInstanceLoopCharacteristics>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_1apshbp" sourceRef="Activity_0otlysh" targetRef="Task_ValidateDocuments" />
+    <bpmn:scriptTask id="Activity_0otlysh" name="Flatten extracted data">
+      <bpmn:extensionElements>
+        <zeebe:script expression="=context merge(allExtractedFields)" resultVariable="allExtractedData" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1glqysf</bpmn:incoming>
+      <bpmn:outgoing>Flow_1apshbp</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="Flow_Docs_Valid" name="valid" sourceRef="Gateway_DocumentsValid" targetRef="Task_CheckOfficeReadiness">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=documentsValid.valid = true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_CAO_Gateway" sourceRef="Task_CAOReview" targetRef="Gateway_CAOApproved" />
+    <bpmn:sequenceFlow id="Flow_Agent_CAO" sourceRef="SubProcess_AgentPlan" targetRef="Task_CAOReview" />
+    <bpmn:userTask id="Task_CAOReview" name="Chief Alpaca Officer reviews recommendation">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:assignmentDefinition candidateGroups="chief-alpaca-officer" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=from json(agent.responseText)" target="agentResponse" />
+        </zeebe:ioMapping>
+        <zeebe:formDefinition formId="Form_mokzfmw" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Agent_CAO</bpmn:incoming>
+      <bpmn:outgoing>Flow_CAO_Gateway</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_rw0nf3v">
+      <bpmndi:BPMNShape id="StartEvent_Submitted_di" bpmnElement="StartEvent_Submitted">
+        <dc:Bounds x="-58" y="252" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="-77" y="295" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_UploadDocuments_di" bpmnElement="Task_UploadDocuments">
+        <dc:Bounds x="40" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ValidateDocuments_di" bpmnElement="Task_ValidateDocuments">
+        <dc:Bounds x="480" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_DocumentsValid_di" bpmnElement="Gateway_DocumentsValid" isMarkerVisible="true">
+        <dc:Bounds x="625" y="245" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="616" y="302" width="88" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RequestMissingInfo_di" bpmnElement="Task_RequestMissingInfo">
+        <dc:Bounds x="340" y="60" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CheckOfficeReadiness_di" bpmnElement="Task_CheckOfficeReadiness">
+        <dc:Bounds x="750" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_AnyBlockers_di" bpmnElement="Gateway_AnyBlockers" isMarkerVisible="true">
+        <dc:Bounds x="905" y="245" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="901" y="215" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SubProcess_AgentPlan_di" bpmnElement="SubProcess_AgentPlan" isExpanded="true">
+        <dc:Bounds x="1020" y="180" width="390" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Tool_GetOfficePolicy_di" bpmnElement="Tool_GetOfficePolicy">
+        <dc:Bounds x="1050" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Tool_GetPastVisits_di" bpmnElement="Tool_GetPastVisits">
+        <dc:Bounds x="1170" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_CAOApproved_di" bpmnElement="Gateway_CAOApproved" isMarkerVisible="true">
+        <dc:Bounds x="1595" y="255" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1582" y="225" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ScheduleVisit_di" bpmnElement="Task_ScheduleVisit">
+        <dc:Bounds x="1700" y="240" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Confirmed_di" bpmnElement="EndEvent_Confirmed">
+        <dc:Bounds x="1842" y="262" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1833" y="305" width="55" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_RejectedBlockers_di" bpmnElement="EndEvent_RejectedBlockers">
+        <dc:Bounds x="912" y="402" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="888" y="445" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_RejectedCAO_di" bpmnElement="EndEvent_RejectedCAO">
+        <dc:Bounds x="1602" y="402" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1578" y="445" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0i7sxl6_di" bpmnElement="Activity_0oc32u3">
+        <dc:Bounds x="190" y="230" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ibbvrs_di" bpmnElement="Activity_0otlysh">
+        <dc:Bounds x="340" y="230" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CAOReview_di" bpmnElement="Task_CAOReview">
+        <dc:Bounds x="1450" y="240" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Start_Upload_di" bpmnElement="Flow_Start_Upload">
+        <di:waypoint x="-22" y="270" />
+        <di:waypoint x="40" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Validate_Gateway_di" bpmnElement="Flow_Validate_Gateway">
+        <di:waypoint x="580" y="270" />
+        <di:waypoint x="625" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Docs_Invalid_di" bpmnElement="Flow_Docs_Invalid">
+        <di:waypoint x="650" y="245" />
+        <di:waypoint x="650" y="100" />
+        <di:waypoint x="440" y="100" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="649" y="181" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_MissingInfo_Upload_di" bpmnElement="Flow_MissingInfo_Upload">
+        <di:waypoint x="340" y="100" />
+        <di:waypoint x="90" y="100" />
+        <di:waypoint x="90" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_OfficeReady_Join_di" bpmnElement="Flow_OfficeReady_Join">
+        <di:waypoint x="850" y="270" />
+        <di:waypoint x="905" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Blockers_Reject_di" bpmnElement="Flow_Blockers_Reject">
+        <di:waypoint x="930" y="295" />
+        <di:waypoint x="930" y="402" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="932" y="302" width="36" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_NoBlockers_di" bpmnElement="Flow_NoBlockers">
+        <di:waypoint x="955" y="270" />
+        <di:waypoint x="1020" y="270" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="969" y="245" width="38" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAO_Approved_di" bpmnElement="Flow_CAO_Approved">
+        <di:waypoint x="1645" y="280" />
+        <di:waypoint x="1700" y="280" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1650" y="255" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAO_Reject_di" bpmnElement="Flow_CAO_Reject">
+        <di:waypoint x="1620" y="305" />
+        <di:waypoint x="1620" y="402" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1630" y="323" width="40" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Schedule_Pack_di" bpmnElement="Flow_Schedule_Pack">
+        <di:waypoint x="1800" y="280" />
+        <di:waypoint x="1842" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1c4m6hv_di" bpmnElement="Flow_1c4m6hv">
+        <di:waypoint x="140" y="270" />
+        <di:waypoint x="190" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1glqysf_di" bpmnElement="Flow_1glqysf">
+        <di:waypoint x="290" y="270" />
+        <di:waypoint x="340" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1apshbp_di" bpmnElement="Flow_1apshbp">
+        <di:waypoint x="440" y="270" />
+        <di:waypoint x="480" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Docs_Valid_di" bpmnElement="Flow_Docs_Valid">
+        <di:waypoint x="675" y="270" />
+        <di:waypoint x="750" y="270" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="674" y="245" width="23" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CAO_Gateway_di" bpmnElement="Flow_CAO_Gateway">
+        <di:waypoint x="1550" y="280" />
+        <di:waypoint x="1595" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Agent_CAO_di" bpmnElement="Flow_Agent_CAO">
+        <di:waypoint x="1410" y="280" />
+        <di:waypoint x="1450" y="280" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
