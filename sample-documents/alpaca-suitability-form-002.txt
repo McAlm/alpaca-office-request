@@ -1,0 +1,37 @@
+================================================================
+            OFFICE ALPACA SUITABILITY FORM
+                      Form ID: ASF-2026-0512
+                      Issued : 2026-05-12
+================================================================
+
+ALPACA INFORMATION
+---------------------------------------------------------------
+Alpaca name           : Captain Tufty
+Alpaca age (years)    : 12
+Breed                 : Suri
+Owner / Handler       : North Lakes Alpaca Cooperative
+
+TEMPERAMENT ASSESSMENT
+---------------------------------------------------------------
+Behaviour with people   : Reserved
+Behaviour with noise    : Easily startled
+Spitting tendency       : Occasional (under stress)
+Temperament score (1-10): 4
+
+VACCINATION RECORD
+---------------------------------------------------------------
+Clostridium perfringens : Administered 2024-07-30
+Rabies (oral)           : Administered 2024-07-30
+West Nile virus         : Administered 2024-07-30
+Anthrax                 : Administered 2024-07-30
+Vaccination status      : EXPIRED
+Vaccination valid until : 2025-07-30
+
+VISIT REQUEST
+---------------------------------------------------------------
+Preferred visit date  : 2026-06-19
+Preferred office      : Berlin HQ - 3rd Floor
+Expected duration     : 1 day
+Expected attendees    : ~25 people
+
+================================================================

@@ -1,0 +1,37 @@
+================================================================
+            OFFICE ALPACA SUITABILITY FORM
+                      Form ID: ASF-2026-0427
+                      Issued : 2026-04-27
+================================================================
+
+ALPACA INFORMATION
+---------------------------------------------------------------
+Alpaca name           : Sir Fluffington
+Alpaca age (years)    : 4
+Breed                 : Huacaya
+Owner / Handler       : Pemberton Alpaca Farm
+
+TEMPERAMENT ASSESSMENT
+---------------------------------------------------------------
+Behaviour with people   : Calm
+Behaviour with noise    : Tolerant
+Spitting tendency       : None observed
+Temperament score (1-10): 8
+
+VACCINATION RECORD
+---------------------------------------------------------------
+Clostridium perfringens : Administered 2026-01-04
+Rabies (oral)           : Administered 2026-01-04
+West Nile virus         : Administered 2025-11-20
+Anthrax                 : Not required for this region
+Vaccination status      : VALID
+Vaccination valid until : 2027-01-04
+
+VISIT REQUEST
+---------------------------------------------------------------
+Preferred visit date  : 2026-06-12
+Preferred office      : Berlin HQ - 2nd Floor
+Expected duration     : 1 day
+Expected attendees    : ~40 people
+
+================================================================
